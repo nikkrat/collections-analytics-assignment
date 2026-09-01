@@ -1,52 +1,117 @@
-# Data Analyst Assignment 
+# Collections Analytics & Recovery Strategy
 
-## Executive deliverables
-- `EXECUTIVE_MEMO.docx` — leadership memo covering the 11% claim, evidence, confidence, recommendation, and limitations.
-- `EXECUTIVE_DASHBOARD.html` — self-contained browser dashboard/visual executive view. Open locally in any browser.
-- `ARCHITECTURE.svg` — production data/analytics architecture.
+## Project Overview
 
-## Analysis & reproducibility
-- `ANALYSIS_NOTEBOOK.md` — complete analytical reasoning and findings.
-- `DATA_QUALITY_REPORT.md` — data-quality findings and cleaning log.
-- `analysis/` — executed pandas scripts used to reproduce the Golden-layer analysis.
-- `sql/` — reproducible SQL checks.
-- `collections.db` — SQLite mirror of the supplied raw CSV tables, created by `analysis/13_build_sqlite.py`.
-- `golden/` — Golden datasets and data-quality support files.
-- `dataset/` — supplied source CSVs used by the analysis scripts.
+This project presents an end-to-end **Collections Analytics and Recovery Strategy** built from a synthetic lending and collections dataset.
 
-## Golden-layer headline figures
-The supplied analytical package uses payment-level deduplication by `payment_id` and exact-row deduplication for calls. The authoritative figures in this package are the figures reproduced by the included scripts.
+The objective was to transform raw operational data into a reliable analytical layer, investigate data-quality issues, evaluate collection and recovery performance, test management claims, and develop an actionable recovery-investment strategy.
 
-- Accounts: 30,000 unique
-- Total outstanding: approximately ₹1,048.90 Cr
-- Gross successful recovery: approximately ₹131.56 Cr
-- Reversed amount: approximately ₹9.47 Cr
-- Net recovery: approximately ₹122.09 Cr
-- Successful-payment recovered accounts: 13,284
-- Jan–Jul monthly recovery: flat/volatile; Feb→Mar = +11.03%
-- Trend test: r² = 0.004, p = 0.89
+The project covers:
 
-## Key conclusion
-The reported “11% month-on-month improvement” is real arithmetic for the Feb→Mar transition, but it is not evidence of sustained improvement. The Jan–Jul series is statistically indistinguishable from a flat/noisy trend.
+- Data quality assessment
+- Duplicate and anomaly detection
+- Golden-layer data preparation
+- Referential-integrity analysis
+- Payment and recovery analysis
+- Risk × DPD segmentation
+- Campaign and operational analysis
+- Calling and channel performance
+- PTP and field-visit analysis
+- Targeting effectiveness
+- ₹10 Cr investment allocation strategy
+- Executive recommendations
 
-## Important limitations
-- `borrower_id` is not a clean unique master key.
-- `payment_reference` is reused and is unsafe as a unique transaction/attribution key.
-- The supplied agent dimension has conflicting identity attributes; person-level agent performance claims are therefore excluded from the memo.
-- Payments do not contain a campaign key, so direct campaign-level recovery attribution is not defensible from the supplied schema.
-- No usable cost field exists for ROI/break-even estimation.
-- August 2026 is partial and is excluded from the complete-month trend comparison.
+---
 
-## Reproduce
-From the `solution/` directory:
-```
-python analysis/12_build_golden.py
-python analysis/13_build_sqlite.py
-python run_sql.py sql/01_golden_payments.sql
-python run_sql.py sql/02_golden_accounts_calls.sql
-python run_sql.py sql/03_monthly_recovery_and_11pct_test.sql
-python run_sql.py sql/04_data_forensics.sql
-```
+## Business Objectives
 
-## Dashboard note
-`EXECUTIVE_DASHBOARD.html` is included as the browser-based executive dashboard because a `.pbix` file must be authored/saved by Power BI Desktop. The analytical specification and Golden data are included so the Power BI report can be recreated from the same evidence without changing the conclusions.
+The analysis addresses the following business questions:
+
+1. How effective are current collection activities?
+2. Which Risk × DPD segments provide the strongest recovery opportunities?
+3. Which campaigns, channels and operational factors show better observed performance?
+4. Did targeted accounts perform better than non-targeted accounts?
+5. How should a ₹10 Cr collection investment be allocated?
+
+---
+
+## Dataset
+
+The source dataset contains 18 operational tables:
+
+- `accounts`
+- `borrowers`
+- `agents`
+- `agent_sessions`
+- `calls`
+- `call_attempts`
+- `call_dispositions`
+- `payments`
+- `field_visits`
+- `promises_to_pay`
+- `campaigns`
+- `vendor_telephony`
+- `account_status_history`
+- `whatsapp_events`
+- `sms_events`
+- `daily_targeting`
+- `complaints`
+- `data_dictionary`
+
+The supplied data contains intentional data-quality challenges including:
+
+- Duplicate records
+- Missing identifiers
+- Conflicting borrower records
+- Invalid borrower references
+- Duplicate payment references
+- Duplicate call records
+- Multiple timezones
+- Inconsistent operational identifiers
+- Partial-month data
+
+---
+
+# Data Quality & Golden Layer
+
+A Golden analytical layer was created before performing business analysis.
+
+## Key Data Quality Findings
+
+| Table | Finding |
+|---|---|
+| Accounts | 30,000 rows and 30,000 unique account IDs |
+| Borrowers | Significant duplicate and conflicting borrower IDs |
+| Calls | Duplicate call records identified during data-quality investigation |
+| Payments | Duplicate payment IDs and repeated payment references investigated |
+| WhatsApp | 600 exact duplicate rows identified |
+| Field Visits | Missing scheduled timestamps identified |
+| Call Attempts | Missing vendor identifiers identified |
+
+`account_id` was selected as the primary analytical anchor because the Accounts table contains 30,000 unique account IDs.
+
+`borrower_id` was **not** treated as a clean unique master key because the borrower table contains extensive duplication and conflicting information.
+
+Payment references were also not assumed to be unique transaction identifiers because repeated references were observed across different payment records.
+
+---
+
+# Executive KPIs
+
+The account-level Golden analysis produced:
+
+| KPI | Result |
+|---|---:|
+| Total Accounts | 30,000 |
+| Gross Successful Recovery | ₹131.65 Cr |
+| Reversed Amount | ₹9.47 Cr |
+| Net Recovery | ₹122.18 Cr |
+| Recovered Accounts | 13,062 |
+| Recovery Efficiency | 11.65% |
+
+### Recovery Efficiency
+
+Recovery Efficiency is calculated as:
+
+```text
+Net Recovery / Total Outstanding Amount
