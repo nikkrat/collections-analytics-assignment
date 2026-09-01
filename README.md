@@ -1,4 +1,4 @@
-# Data Analyst Assignment — Submission Package
+# Data Analyst Assignment 
 
 ## Executive deliverables
 - `EXECUTIVE_MEMO.docx` — leadership memo covering the 11% claim, evidence, confidence, recommendation, and limitations.
